@@ -2,106 +2,203 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# -----------------------------
-# MAIN PROJECT TITLE & DESCRIPTION
-# -----------------------------
-st.title("Smart Factory Dashboard")
+# -------------------------------------------------
+# PAGE CONFIG
+# -------------------------------------------------
+st.set_page_config(
+    page_title="Smart Factory Analytics Platform",
+    layout="wide"
+)
+
+# -------------------------------------------------
+# TITLE & EXECUTIVE SUMMARY
+# -------------------------------------------------
+st.title("🏭 Smart Factory Analytics Platform")
+
 st.markdown("""
-Welcome to the **Smart Factory Dashboard**.  
+### 📌 Executive Summary
 
-This dashboard demonstrates a simulated production and recruitment environment using **sample datasets** for Sales, Production, and Recruitment.  
+This Smart Factory Analytics Platform demonstrates how **data-driven decision-making**
+can be applied across **manufacturing operations, sales performance, and recruitment analytics**.
 
-It is designed to showcase my skills in **Python, Data Analytics, Data Visualization, and Streamlit**, and how I can turn raw data into actionable insights.  
+The dashboard integrates multiple business functions into a **single analytics view**,
+similar to what leadership teams use to monitor performance and identify improvement opportunities.
 
-Explore different sections to understand:
-- Sales trends across stores and products
-- Production efficiency and machine status
-- Recruitment pipeline and candidate tracking
+#### 🔍 Business Problems Addressed
+- Limited visibility into production efficiency and machine performance
+- Difficulty understanding sales trends across stores and products
+- Lack of insight into recruitment pipeline efficiency
+
+#### 🛠️ Analytical Approach
+- Structured and analysed operational datasets using **Python & Pandas**
+- Built interactive dashboards using **Streamlit and Plotly**
+- Enabled KPI-driven analysis through filters and visual exploration
+
+#### 🎯 Business Value
+- Faster operational insights
+- Early identification of inefficiencies
+- Better alignment between production, sales, and workforce planning
+
+This project reflects **real-world analytics skills** applicable to Business Analyst,
+Operations Analyst, and Data Analyst roles.
 """)
 
-# -----------------------------
-# LOAD CSV FILES
-# -----------------------------
+st.divider()
+
+# -------------------------------------------------
+# LOAD DATA
+# -------------------------------------------------
 sales_df = pd.read_csv("sales_sample.csv")
 prod_df = pd.read_csv("production_sample.csv")
 rec_df = pd.read_csv("recruitment_sample.csv")
 
-# -----------------------------
-# SALES SECTION
-# -----------------------------
-st.header("Sales Overview")
+# -------------------------------------------------
+# SALES ANALYTICS
+# -------------------------------------------------
+st.header("📈 Sales Performance Analysis")
+
 st.markdown("""
-This section shows the **daily units sold** for different products across multiple stores.  
+This section analyses **sales performance across stores and products**.
 
-You can select a store and product to see **trends over time**, including the effect of promotions and holidays.  
+Decision-makers can evaluate demand patterns, identify high-performing products,
+and understand the impact of seasonal or promotional activity.
 
-**Insights you can explore:**
-- Identify peak sales periods
-- Compare product performance across stores
-- Understand impact of promotions or holidays on sales
+**Key Business Questions Answered:**
+- Which products perform best in each store?
+- When do sales peak or decline?
+- How do sales trends change over time?
 """)
 
-store = st.selectbox("Select Store", sales_df['store'].unique())
-product = st.selectbox("Select Product", sales_df['product'].unique())
+col1, col2 = st.columns(2)
+with col1:
+    store = st.selectbox("Select Store", sales_df['store'].unique())
+with col2:
+    product = st.selectbox("Select Product", sales_df['product'].unique())
 
-filtered_sales = sales_df[(sales_df['store']==store) & (sales_df['product']==product)]
-fig_sales = px.line(filtered_sales, x='date', y='units_sold', title=f"Units Sold: {product} in {store}")
-st.plotly_chart(fig_sales)
+filtered_sales = sales_df[
+    (sales_df['store'] == store) &
+    (sales_df['product'] == product)
+]
 
-# -----------------------------
-# PRODUCTION SECTION
-# -----------------------------
-st.header("Production Overview")
+fig_sales = px.line(
+    filtered_sales,
+    x='date',
+    y='units_sold',
+    title=f"Units Sold Over Time: {product} in {store}"
+)
+
+st.plotly_chart(fig_sales, use_container_width=True)
+
 st.markdown("""
-This section tracks the **units produced by different machines and operators** across shifts.  
-
-It also shows **machine status** (running, idle, maintenance, breakdown) and **downtime** for each machine.  
-
-**Insights you can explore:**
-- Machines with highest efficiency or most downtime
-- Impact of operator and shift on production
-- Patterns in machine breakdowns or maintenance needs
+📌 **Insight Example:**  
+Consistent peaks may indicate strong product-market fit, while sharp drops could signal
+supply issues, pricing sensitivity, or reduced demand.
 """)
 
-machine = st.selectbox("Select Machine", prod_df['machine_id'].unique())
-shift = st.selectbox("Select Shift", prod_df['shift'].unique())
+st.divider()
 
-filtered_prod = prod_df[(prod_df['machine_id']==machine) & (prod_df['shift']==shift)]
-fig_prod = px.bar(filtered_prod, x='date', y='units_produced', color='status',
-                  title=f"Units Produced by {machine} ({shift} shift)")
-st.plotly_chart(fig_prod)
+# -------------------------------------------------
+# PRODUCTION ANALYTICS
+# -------------------------------------------------
+st.header("🏭 Production & Operations Analysis")
 
-# -----------------------------
-# RECRUITMENT SECTION
-# -----------------------------
-st.header("Recruitment Overview")
 st.markdown("""
-This section shows the **recruitment pipeline** for different roles and locations.  
+This section focuses on **manufacturing performance and machine efficiency**.
 
-You can select a role and location to track **candidates at different stages**, average time spent per stage, and skills distribution.  
+It helps operations teams monitor production output, machine status, and downtime,
+supporting continuous improvement initiatives.
 
-**Insights you can explore:**
-- Identify stages where candidates spend the most time
-- Monitor efficiency of recruitment process
-- Understand skills and sourcing effectiveness
+**Key Business Questions Answered:**
+- Which machines experience the most downtime?
+- How does shift allocation impact output?
+- Where are operational bottlenecks occurring?
 """)
 
-role = st.selectbox("Select Role", rec_df['role'].unique())
-location = st.selectbox("Select Location", rec_df['location_preference'].unique())
+col3, col4 = st.columns(2)
+with col3:
+    machine = st.selectbox("Select Machine", prod_df['machine_id'].unique())
+with col4:
+    shift = st.selectbox("Select Shift", prod_df['shift'].unique())
 
-filtered_rec = rec_df[(rec_df['role']==role) & (rec_df['location_preference']==location)]
-fig_rec = px.bar(filtered_rec, x='stage', y='time_in_stage_days', color='skills',
-                 title=f"Recruitment Pipeline: {role} in {location}")
-st.plotly_chart(fig_rec)
+filtered_prod = prod_df[
+    (prod_df['machine_id'] == machine) &
+    (prod_df['shift'] == shift)
+]
 
-# -----------------------------
-# ADDITIONAL NOTES
-# -----------------------------
+fig_prod = px.bar(
+    filtered_prod,
+    x='date',
+    y='units_produced',
+    color='status',
+    title=f"Daily Production Output: {machine} ({shift} Shift)"
+)
+
+st.plotly_chart(fig_prod, use_container_width=True)
+
 st.markdown("""
-**Tips for exploring the dashboard:**
-- Use the dropdown menus to filter data interactively.
-- Hover over charts to see exact values.
-- Observe trends over time to identify insights quickly.
+📌 **Insight Example:**  
+High downtime linked to specific shifts or machines may indicate maintenance gaps,
+training needs, or scheduling inefficiencies.
+""")
 
-This dashboard is designed to simulate real-world business analytics and demonstrate my ability to **analyze data, build visualizations, and communicate insights effectively**.
+st.divider()
+
+# -------------------------------------------------
+# RECRUITMENT ANALYTICS
+# -------------------------------------------------
+st.header("👥 Recruitment Pipeline Analysis")
+
+st.markdown("""
+This section analyses the **recruitment lifecycle** across roles and locations.
+
+HR teams can track candidate movement, identify delays, and optimise hiring strategies.
+
+**Key Business Questions Answered:**
+- Where do candidates spend the most time?
+- Which roles take longer to fill?
+- How effective is the recruitment funnel?
+""")
+
+col5, col6 = st.columns(2)
+with col5:
+    role = st.selectbox("Select Role", rec_df['role'].unique())
+with col6:
+    location = st.selectbox("Select Location", rec_df['location_preference'].unique())
+
+filtered_rec = rec_df[
+    (rec_df['role'] == role) &
+    (rec_df['location_preference'] == location)
+]
+
+fig_rec = px.bar(
+    filtered_rec,
+    x='stage',
+    y='time_in_stage_days',
+    color='skills',
+    title=f"Recruitment Pipeline Duration: {role} ({location})"
+)
+
+st.plotly_chart(fig_rec, use_container_width=True)
+
+st.markdown("""
+📌 **Insight Example:**  
+Extended time in specific stages may indicate interview bottlenecks,
+candidate skill mismatches, or approval delays.
+""")
+
+st.divider()
+
+# -------------------------------------------------
+# FINAL NOTES
+# -------------------------------------------------
+st.markdown("""
+### 🧠 Key Takeaways
+
+- Demonstrates **end-to-end analytics capability**
+- Combines **engineering, business, and data analytics**
+- Built using **free, open-source tools**
+- Designed to mirror real organisational dashboards
+
+This project highlights my ability to **translate data into insights and business value**,
+a key requirement for analytics roles in modern organisations.
 """)
