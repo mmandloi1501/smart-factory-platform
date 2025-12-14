@@ -53,6 +53,28 @@ prod_df = pd.read_csv("production_sample.csv")
 rec_df = pd.read_csv("recruitment_sample.csv")
 
 # -------------------------------------------------
+# EXECUTIVE KPI CARDS
+# -------------------------------------------------
+st.subheader("📊 Executive KPIs Overview")
+
+# Calculate KPIs
+total_units_sold = sales_df['units_sold'].sum()
+total_production = prod_df['units_produced'].sum()
+avg_recruitment_time = rec_df['time_in_stage_days'].mean()
+# Simulated efficiency: assume max possible units per machine per shift = 100
+production_efficiency = round((total_production / (len(prod_df) * 100)) * 100, 2)
+
+# Display KPI cards in 4 columns
+col1, col2, col3, col4 = st.columns(4)
+
+col1.metric("Total Units Sold", f"{total_units_sold}")
+col2.metric("Total Production", f"{total_production}")
+col3.metric("Avg Recruitment Time (days)", f"{round(avg_recruitment_time,2)}")
+col4.metric("Production Efficiency", f"{production_efficiency}%")
+
+st.divider()
+
+# -------------------------------------------------
 # SALES ANALYTICS
 # -------------------------------------------------
 st.header("📈 Sales Performance Analysis")
